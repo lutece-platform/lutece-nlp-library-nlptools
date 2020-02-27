@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Library NLPTools</title>
+    </properties>
+    <body>
+        <section name="Library NLPTools">
+            <subsection name="Introduction">
+                <p>
+                    Powered by
+                    <img src="images/opennlp-logo.png" />
+                </p>
+                <p>
+                    Cette bibliothèque fournit un ensemble d'outils basés sur le projet Apache <a href="https://opennlp.apache.org/">OpenNLP</a> 
+                    pour identifier des entités telles que des noms de personnes dans un texte donné.
+                    Certaines de ces fonctionnalités peuvent être utilisées pour rendre anonymes les données 
+                    dans un texte en supprimant les noms et les courriels par exemple.
+                </p>
+            </subsection>
+            <subsection name="Usage">
+                <p>
+                     Cette bibliothèque fournit une interface de ligne de commande pour anonymiser un texte.
+                </p>
+            </subsection>
+        </section>
+    </body>
+</document>
+
