@@ -100,7 +100,7 @@ public abstract class AbstractFinder implements Finder
     @Override
     public List<String> getFoundEntities( )
     {
-        return _listFoundEntities;
+        return new ArrayList( _listFoundEntities );
     }
 
 }

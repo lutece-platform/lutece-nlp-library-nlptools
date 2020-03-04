@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 public class PersonNameFinderTest
 {
 
-    private static final String INPUT = "Hello dear Todd Asher! How are you ? And what about Tess OBrien ";
+    private static final String INPUT = "Hello dear John Asher ! How are you ? And what about Tess OBrien ";
     private static final String REPLACEMENT = "#PERSON_NAME#";
     private static final String RESULT = "Hello dear #PERSON_NAME# ! How are you ? And what about #PERSON_NAME# ";
 

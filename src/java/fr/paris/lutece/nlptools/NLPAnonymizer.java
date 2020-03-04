@@ -101,15 +101,15 @@ public class NLPAnonymizer
         System.out.println( strOutput );
         String strOutputFile = getAnonymizedFile( strInputFile );
         FileUtils.writeFile( strOutputFile, strOutput );
-        
+
         System.exit( 0 );
     }
-    
+
     private static String getAnonymizedFile( String strFilePath )
     {
         File file = new File( strFilePath );
-        String strPath = file.getPath().substring( 0, strFilePath.lastIndexOf( file.getName() ) );
-        return strPath + FILE_PREFIX + file.getName();
-        
+        String strPath = file.getPath( ).substring( 0, strFilePath.lastIndexOf( file.getName( ) ) );
+        return strPath + FILE_PREFIX + file.getName( );
+
     }
 }

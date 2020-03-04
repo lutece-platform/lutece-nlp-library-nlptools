@@ -66,24 +66,14 @@ public class FileUtils
                 BufferedReader in = new BufferedReader( isr ) ; )
         {
             Writer writer = new StringWriter( );
-
-            if ( in != null )
+            char [ ] buffer = new char [ 1024];
+            int n;
+            while ( ( n = in.read( buffer ) ) != -1 )
             {
-                char [ ] buffer = new char [ 1024];
-
-                int n;
-
-                while ( ( n = in.read( buffer ) ) != -1 )
-                {
-                    writer.write( buffer, 0, n );
-                }
-
-                return writer.toString( );
+                writer.write( buffer, 0, n );
             }
-            else
-            {
-                return "";
-            }
+
+            return writer.toString( );
         }
 
     }
@@ -101,9 +91,10 @@ public class FileUtils
     public static void writeFile( String strOutputFile, String strContent ) throws IOException
     {
         FileWriter fstream = new FileWriter( strOutputFile );
-        BufferedWriter out = new BufferedWriter( fstream );
-        out.write( strContent );
-        out.close( );
+        try ( BufferedWriter out = new BufferedWriter( fstream ) )
+        {
+            out.write( strContent );
+        }
 
     }
 }
