@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,54 +34,73 @@
 
 package fr.paris.lutece.nlptools;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- * PersonNameFinder Test
+ * Abstract Finder
  */
-public class PersonNameFinderTest
+public abstract class AbstractFinder implements Finder
 {
-
-    private static final String INPUT = "Hello dear Todd Asher! How are you ? And what about Tess OBrien ";
-    private static final String REPLACEMENT = "#PERSON_NAME#";
-    private static final String RESULT = "Hello dear #PERSON_NAME# ! How are you ? And what about #PERSON_NAME# ";
+    private String _strReplacement;
+    private List<String> _listFoundEntities = new ArrayList<>( );
 
     /**
-     * Test of findOccurrences method, of class PersonNameFinder.
-     * 
-     * @throws java.lang.Exception
+     * Constructor
      */
-    @Test
-    public void testFindOccurrences( ) throws Exception
+    public AbstractFinder( )
     {
-        System.out.println( "findOccurrences" );
-        String strInputText = INPUT;
-        PersonNameFinder instance = new PersonNameFinder( );
-        int expResult = 2;
-        List<String> result = instance.findOccurrences( strInputText );
-        assertEquals( expResult, result.size( ) );
-        assertEquals( instance.getFoundEntities( ).size( ), result.size( ) );
+        _strReplacement = " ";
     }
 
     /**
-     * Test of replacePersonName method, of class PersonNameFinder.
+     * Constructor
      * 
-     * @throws java.lang.Exception
+     * @param strReplacement
+     *            Replacement string
      */
-    @Test
-    public void testReplaceOccurrences( ) throws Exception
+    public AbstractFinder( String strReplacement )
     {
-        System.out.println( "replaceOccurrences" );
-        String strInputText = INPUT;
-        String strReplacement = REPLACEMENT;
-        PersonNameFinder instance = new PersonNameFinder( );
-        String expResult = RESULT;
-        String result = instance.replaceOccurrences( strInputText, strReplacement );
-        System.out.println( INPUT );
-        System.out.println( result );
-        assertEquals( expResult, result );
+        _strReplacement = strReplacement;
+    }
+
+    /**
+     * @return the replacement
+     */
+    public String getReplacement( )
+    {
+        return _strReplacement;
+    }
+
+    /**
+     * @param strReplacement
+     *            the replacement to set
+     */
+    public void setReplacement( String strReplacement )
+    {
+        _strReplacement = strReplacement;
+    }
+
+    /**
+     * Add a found entity
+     * 
+     * @param strEntity
+     *            The entity
+     */
+    public void addEntity( String strEntity )
+    {
+        _listFoundEntities.add( strEntity );
+    }
+
+    /**
+     * Get all found entities
+     * 
+     * @return The list
+     */
+    @Override
+    public List<String> getFoundEntities( )
+    {
+        return _listFoundEntities;
     }
 
 }

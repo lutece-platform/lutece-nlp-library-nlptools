@@ -41,10 +41,10 @@ import static org.junit.Assert.*;
 /**
  * EmailFinder Test
  */
-public class EmailFinderTest
+public class PhoneNumvrFinderTest
 {
-    private static final String INPUT_TEXT = " Here is my emails john.doe@domain.com and john@nowher.com";
-    private static final String OUTPUT_TEXT = " Here is my emails #email# and #email#";
+    private static final String INPUT_TEXT = " 0606060606 - 06 06 06 06 06 - +33 606060606";
+    private static final String OUTPUT_TEXT = " #phonenumber# - #phonenumber# - #phonenumber#";
 
     /**
      * Test of findOccurrences method, of class EmailFinder.
@@ -56,8 +56,8 @@ public class EmailFinderTest
     {
         System.out.println( "findOccurrences" );
         String strInputText = INPUT_TEXT;
-        EmailFinder instance = new EmailFinder( );
-        int expResult = 2;
+        PhoneNumberFinder instance = new PhoneNumberFinder( "#phonenumber#" );
+        int expResult = 3;
         List<String> result = instance.findOccurrences( strInputText );
         assertEquals( expResult, result.size( ) );
         assertEquals( instance.getFoundEntities( ).size( ), result.size( ) );
@@ -73,9 +73,10 @@ public class EmailFinderTest
     {
         System.out.println( "replaceOccurrences" );
         String strInputText = INPUT_TEXT;
-        EmailFinder instance = new EmailFinder( "#email#" );
+        PhoneNumberFinder instance = new PhoneNumberFinder( "#phonenumber#" );
         String expResult = OUTPUT_TEXT;
         String result = instance.replaceOccurrences( strInputText );
+        System.out.println( INPUT_TEXT );
         System.out.println( result );
         assertEquals( expResult, result );
     }
@@ -90,10 +91,11 @@ public class EmailFinderTest
     {
         System.out.println( "replaceOccurrences" );
         String strInputText = INPUT_TEXT;
-        String strReplacement = "#email#";
-        EmailFinder instance = new EmailFinder( );
+        String strReplacement = "#phonenumber#";
+        PhoneNumberFinder instance = new PhoneNumberFinder( "#phonenumber#" );
         String expResult = OUTPUT_TEXT;
         String result = instance.replaceOccurrences( strInputText, strReplacement );
+        System.out.println( INPUT_TEXT );
         System.out.println( result );
         assertEquals( expResult, result );
     }

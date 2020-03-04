@@ -32,39 +32,54 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.nlptools;
 
 import java.util.List;
 
 /**
- * Finder 
- * Interface for entity finders
+ * Finder Interface for entity finders
  */
-public interface Finder 
+public interface Finder
 {
     /**
      * Find one or several occurrences of an entity
-     * @param strInputText The input text
+     * 
+     * @param strInputText
+     *            The input text
      * @return The list of entities found
-     * @throws FinderException If an error occurs
+     * @throws FinderException
+     *             If an error occurs
      */
     List<String> findOccurrences( String strInputText ) throws FinderException;
 
-    
     /**
      * Replace all the occurrences of an entity by a replacement text
-     * @param strInputText The input text
-     * @throws FinderException If an error occurs
+     * 
+     * @param strInputText
+     *            The input text
+     * @throws FinderException
+     *             If an error occurs
      * @return The text with replacements
      */
-    String replaceOccurrences( String strInputText ) throws FinderException; 
+    String replaceOccurrences( String strInputText ) throws FinderException;
+
     /**
      * Replace all the occurrences of an entity by a replacement text
-     * @param strInputText The input text
-     * @param strReplacement The replacement text
-     * @throws FinderException If an error occurs
+     * 
+     * @param strInputText
+     *            The input text
+     * @param strReplacement
+     *            The replacement text
+     * @throws FinderException
+     *             If an error occurs
      * @return The text with replacements
      */
-    String replaceOccurrences( String strInputText , String strReplacement ) throws FinderException; 
+    String replaceOccurrences( String strInputText, String strReplacement ) throws FinderException;
+
+    /**
+     * Returns all found entities after a findOccurences
+     * 
+     * @return The list
+     */
+    List<String> getFoundEntities( );
 }

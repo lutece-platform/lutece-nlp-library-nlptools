@@ -32,54 +32,54 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.nlptools;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * EmailFinder
  */
-public class EmailFinder implements Finder
+public class EmailFinder extends AbstractFinder
 {
-    private static final Pattern MAIL_REGEX = Pattern.compile("[-_.0-9A-Za-z]+@[-_0-9A-Za-z]+[-_.0-9A-Za-z]+");
-
-    private String _strReplacement;
+    private static final Pattern MAIL_REGEX = Pattern.compile( "[-_.0-9A-Za-z]+@[-_0-9A-Za-z]+[-_.0-9A-Za-z]+" );
 
     /**
      * Constructor
      */
-    public EmailFinder()
+    public EmailFinder( )
     {
-        _strReplacement = " ";
+        super( );
     }
-    
+
     /**
      * Constructor
-     * @param strReplacement Replacement string 
+     * 
+     * @param strReplacement
+     *            Replacement string
      */
     public EmailFinder( String strReplacement )
     {
-        _strReplacement = strReplacement;
+        super( strReplacement );
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public List<String> findOccurrences( String strInputText ) throws FinderException
     {
-        List<String> listOccurrences = new ArrayList<>();
+        List<String> listOccurrences = new ArrayList<>( );
         Matcher matcher = MAIL_REGEX.matcher( strInputText );
-        while( matcher.find() )
+        while ( matcher.find( ) )
         {
-            listOccurrences.add( matcher.group() );
+            String strEntity = matcher.group( );
+            listOccurrences.add( strEntity );
+            addEntity( strEntity );
         }
-       return listOccurrences;
+        return listOccurrences;
     }
 
     /**
@@ -88,7 +88,7 @@ public class EmailFinder implements Finder
     @Override
     public String replaceOccurrences( String strInputText ) throws FinderException
     {
-        return replaceOccurrences( strInputText, _strReplacement );
+        return replaceOccurrences( strInputText, getReplacement( ) );
     }
 
     /**

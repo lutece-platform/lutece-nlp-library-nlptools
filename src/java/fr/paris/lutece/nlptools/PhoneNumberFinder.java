@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,54 +34,73 @@
 
 package fr.paris.lutece.nlptools;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * PersonNameFinder Test
+ * PhoneNumberFinder
  */
-public class PersonNameFinderTest
+public class PhoneNumberFinder extends AbstractFinder
 {
 
-    private static final String INPUT = "Hello dear Todd Asher! How are you ? And what about Tess OBrien ";
-    private static final String REPLACEMENT = "#PERSON_NAME#";
-    private static final String RESULT = "Hello dear #PERSON_NAME# ! How are you ? And what about #PERSON_NAME# ";
+    private static final String PHONE_REGEX = "(?:(?:\\+|00)33|0)\\s*[1-9](?:[\\s.-]*\\d{2}){4}";
+
+    private static final Pattern PATTERN_REGEX = Pattern.compile( PHONE_REGEX );
 
     /**
-     * Test of findOccurrences method, of class PersonNameFinder.
-     * 
-     * @throws java.lang.Exception
+     * Constructor
      */
-    @Test
-    public void testFindOccurrences( ) throws Exception
+    public PhoneNumberFinder( )
     {
-        System.out.println( "findOccurrences" );
-        String strInputText = INPUT;
-        PersonNameFinder instance = new PersonNameFinder( );
-        int expResult = 2;
-        List<String> result = instance.findOccurrences( strInputText );
-        assertEquals( expResult, result.size( ) );
-        assertEquals( instance.getFoundEntities( ).size( ), result.size( ) );
+        super( );
     }
 
     /**
-     * Test of replacePersonName method, of class PersonNameFinder.
+     * Constructor
      * 
-     * @throws java.lang.Exception
+     * @param strReplacement
+     *            Replacement string
      */
-    @Test
-    public void testReplaceOccurrences( ) throws Exception
+    public PhoneNumberFinder( String strReplacement )
     {
-        System.out.println( "replaceOccurrences" );
-        String strInputText = INPUT;
-        String strReplacement = REPLACEMENT;
-        PersonNameFinder instance = new PersonNameFinder( );
-        String expResult = RESULT;
-        String result = instance.replaceOccurrences( strInputText, strReplacement );
-        System.out.println( INPUT );
-        System.out.println( result );
-        assertEquals( expResult, result );
+        super( strReplacement );
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> findOccurrences( String strInputText ) throws FinderException
+    {
+        List<String> listOccurrences = new ArrayList<>( );
+        Matcher matcher = PATTERN_REGEX.matcher( strInputText );
+        while ( matcher.find( ) )
+        {
+            String strEntity = matcher.group( );
+            listOccurrences.add( strEntity );
+            addEntity( strEntity );
+        }
+        return listOccurrences;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public String replaceOccurrences( String strInputText ) throws FinderException
+    {
+        return replaceOccurrences( strInputText, getReplacement( ) );
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public String replaceOccurrences( String strInputText, String strReplacement ) throws FinderException
+    {
+        return PATTERN_REGEX.matcher( strInputText ).replaceAll( strReplacement );
     }
 
 }
