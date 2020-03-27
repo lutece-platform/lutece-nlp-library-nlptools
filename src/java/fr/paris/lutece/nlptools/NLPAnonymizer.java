@@ -43,7 +43,8 @@ import java.util.List;
  */
 public class NLPAnonymizer
 {
-    private static final String FILE_PREFIX = "anonymized-";
+    private static final String PREFIX_OUTPUT_FILE = "anonymized-";
+    private static final String PREFIX_LOG_FILE = "log-";
 
     public static void main( String [ ] args ) throws IOException
     {
@@ -60,12 +61,13 @@ public class NLPAnonymizer
         PhoneNumberFinder phoneFinder = new PhoneNumberFinder( "#PhoneNumber#" );
         listFinders.add( phoneFinder );
 
-        PersonNameFinder nameFinder = new PersonNameFinder( "#PersonName#" );
+        PersonNameFinder nameFinder = new PersonNameFinder( "#PersonName#", "en" );
         listFinders.add( nameFinder );
 
         String strInputFile = args [0];
         String strInput = FileUtils.readFileContent( strInputFile );
-        strInput = strInput.replace( '"', ' ' );
+
+        StringBuilder sbLogs = new StringBuilder( );
 
         for ( Finder finder : listFinders )
         {
@@ -73,15 +75,16 @@ public class NLPAnonymizer
             {
                 finder.findOccurrences( strInput );
                 List<String> listEntities = finder.getFoundEntities( );
-                System.out.println( "- " + listEntities.size( ) + " entities found by " + finder.getClass( ).getName( ) );
+                log( sbLogs, "- " + listEntities.size( ) + " entities found by " + finder.getClass( ).getName( ) );
+
                 for ( String strEntity : listEntities )
                 {
-                    System.out.println( "'" + strEntity + "'" );
+                    log( sbLogs, "'" + strEntity + "'" );
                 }
             }
             catch( FinderException ex )
             {
-                System.out.println( ex.getMessage( ) );
+                log( sbLogs, ex.getMessage( ) );
             }
         }
 
@@ -94,22 +97,29 @@ public class NLPAnonymizer
             }
             catch( FinderException ex )
             {
-                System.out.println( ex.getMessage( ) );
+                log( sbLogs, ex.getMessage( ) );
             }
         }
 
-        System.out.println( strOutput );
-        String strOutputFile = getAnonymizedFile( strInputFile );
+        String strOutputFile = getOutputFile( strInputFile, PREFIX_OUTPUT_FILE );
         FileUtils.writeFile( strOutputFile, strOutput );
+        String strLogFile = getOutputFile( strInputFile, PREFIX_LOG_FILE );
+        FileUtils.writeFile( strLogFile, sbLogs.toString( ) );
 
         System.exit( 0 );
     }
 
-    private static String getAnonymizedFile( String strFilePath )
+    private static String getOutputFile( String strFilePath, String strPrefix )
     {
         File file = new File( strFilePath );
         String strPath = file.getPath( ).substring( 0, strFilePath.lastIndexOf( file.getName( ) ) );
-        return strPath + FILE_PREFIX + file.getName( );
+        return strPath + strPrefix + file.getName( );
 
+    }
+
+    private static void log( StringBuilder sbLogs, String strLog )
+    {
+        sbLogs.append( strLog ).append( '\n' );
+        System.out.println( strLog );
     }
 }

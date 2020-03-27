@@ -35,6 +35,7 @@ package fr.paris.lutece.nlptools;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import opennlp.tools.namefind.NameFinderME;
@@ -49,16 +50,16 @@ import opennlp.tools.util.Span;
 public class PersonNameFinder extends AbstractFinder
 {
 
-    private static final String TOKEN_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/en-token.bin";
-    private static final String NAME_FINDER_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/en-ner-person.bin";
+    private static final String TOKEN_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-token.bin";
+    private static final String NAME_FINDER_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-ner-person.bin";
 
     private static String _strTokenModel = TOKEN_DEFAULT_MODEL;
     private static TokenizerME _tokenizer;
 
-    private static String _strNameFinderModel = NAME_FINDER_DEFAULT_MODEL;
-    private static NameFinderME _nameFinder;
+    private String _strNameFinderModel = NAME_FINDER_DEFAULT_MODEL;
+    private NameFinderME _nameFinder;
 
-    private static boolean _bInit;
+    private boolean _bInit;
 
     /**
      * Constructor
@@ -80,9 +81,20 @@ public class PersonNameFinder extends AbstractFinder
     }
 
     /**
+     * Constructor
+     *
+     * @param strReplacement
+     *            The replacement
+     */
+    public PersonNameFinder( String strReplacement, String strLanguage )
+    {
+        super( strReplacement, strLanguage );
+    }
+
+    /**
      * @return the Model
      */
-    public static String getNameModel( )
+    public String getNameModel( )
     {
         return _strNameFinderModel;
     }
@@ -91,7 +103,7 @@ public class PersonNameFinder extends AbstractFinder
      * @param strModel
      *            the Model to set
      */
-    public static void setNameModel( String strModel )
+    public void setNameModel( String strModel )
     {
         _strNameFinderModel = strModel;
     }
@@ -175,9 +187,7 @@ public class PersonNameFinder extends AbstractFinder
             _nameFinder.clearAdaptiveData( );
         }
 
-        // String[] sentence = _tokenizer.tokenize( strInputText );
-        strInputText = strInputText.replace( '"', ' ' );
-        String [ ] sentence = strInputText.split( " " );
+        String [ ] sentence = _tokenizer.tokenize( strInputText );
         String [ ] output = new String [ sentence.length];
         Span nameSpans [ ] = _nameFinder.find( sentence );
         int i = 0;
@@ -220,8 +230,10 @@ public class PersonNameFinder extends AbstractFinder
      */
     private void init( ) throws FinderException
     {
-        try( InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream( _strTokenModel ) ;
-                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream( _strNameFinderModel ) )
+        String strTokenModel = MessageFormat.format( _strTokenModel, getLanguage( ) );
+        String strNameFinderModel = MessageFormat.format( _strNameFinderModel, getLanguage( ) );
+        try( InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream( strTokenModel ) ;
+                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream( strNameFinderModel ) )
         {
             TokenizerModel tm = new TokenizerModel( isTokenModel );
             _tokenizer = new TokenizerME( tm );

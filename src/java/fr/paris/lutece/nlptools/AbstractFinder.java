@@ -42,7 +42,9 @@ import java.util.List;
  */
 public abstract class AbstractFinder implements Finder
 {
+    private static final String DEFAULT_LANGUAGE = "en";
     private String _strReplacement;
+    private String _strLanguage = DEFAULT_LANGUAGE;
     private List<String> _listFoundEntities = new ArrayList<>( );
 
     /**
@@ -57,11 +59,42 @@ public abstract class AbstractFinder implements Finder
      * Constructor
      * 
      * @param strReplacement
-     *            Replacement string
+     *            Replacement
      */
     public AbstractFinder( String strReplacement )
     {
         _strReplacement = strReplacement;
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param strReplacement
+     *            Replacement
+     * @param strLanguage
+     *            Language
+     */
+    public AbstractFinder( String strReplacement, String strLanguage )
+    {
+        _strReplacement = strReplacement;
+        _strLanguage = strLanguage;
+    }
+
+    /**
+     * @return the _strLanguage
+     */
+    public String getLanguage( )
+    {
+        return _strLanguage;
+    }
+
+    /**
+     * @param strLanguage
+     *            the _strLanguage to set
+     */
+    public void setLanguage( String strLanguage )
+    {
+        _strLanguage = strLanguage;
     }
 
     /**

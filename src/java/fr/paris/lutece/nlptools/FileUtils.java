@@ -91,7 +91,7 @@ public class FileUtils
     public static void writeFile( String strOutputFile, String strContent ) throws IOException
     {
         FileWriter fstream = new FileWriter( strOutputFile );
-        try ( BufferedWriter out = new BufferedWriter( fstream ) )
+        try( BufferedWriter out = new BufferedWriter( fstream ) )
         {
             out.write( strContent );
         }
