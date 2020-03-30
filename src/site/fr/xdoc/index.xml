@@ -17,9 +17,27 @@
                     dans un texte en supprimant les noms et les courriels par exemple.
                 </p>
             </subsection>
+            <subsection name="Build">
+                <p>
+                    Cette bibliothèque fournit une interface de ligne de commande pour anonymiser un texte. 
+                </p>
+                <p>
+                <p>
+                    Pour construire le jar exécutable, lancer la commande suivante 
+                </p>
+                    <pre>
+                        mvn assembly
+                    </pre>                    
+                </p>
+            </subsection>
             <subsection name="Usage">
                 <p>
-                     Cette bibliothèque fournit une interface de ligne de commande pour anonymiser un texte.
+                    Le programme en ligne de commandes se lance de la manière suivante.
+                </p>
+                <p>
+                    <pre>
+                        java -jar java -jar nlpanonymizer.jar &lt;file_name&gt;
+                    </pre>                    
                 </p>
             </subsection>
         </section>

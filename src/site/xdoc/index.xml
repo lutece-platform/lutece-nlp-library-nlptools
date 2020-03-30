@@ -16,9 +16,27 @@
                     Some of those features can be used to anonymized data in a text by removing names and emails for example.
                 </p>
             </subsection>
+            <subsection name="Build">
+                <p>
+                    This library provides a Command Line Interface to anonymize text. 
+                </p>
+                <p>
+                <p>
+                    To build the executable jar, run the following command 
+                </p>
+                    <pre>
+                        mvn assembly
+                    </pre>                    
+                </p>
+            </subsection>
             <subsection name="Usage">
                 <p>
-                    This library provides a Command Line Interface to anonymize text.
+                    The Command Line Interface tools can be run as follow.
+                </p>
+                <p>
+                    <pre>
+                        java -jar java -jar nlpanonymizer.jar &lt;file_name&gt;
+                    </pre>                    
                 </p>
             </subsection>
         </section>

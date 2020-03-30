@@ -9,11 +9,33 @@
 
 Powered by![](https://dev.lutece.paris.fr/plugins/library-nlptools/images/opennlp-logo.png)
 
-Cette bibliothèque fournit un ensemble d'outils basés sur le projet Apache [OpenNLP](https://opennlp.apache.org/) pour identifier des entités telles que des noms de personnes dans un texte donné.Certaines de ces fonctionnalités peuvent être utilisées pour rendre anonymes les données dans un texte en supprimant les noms et les courriels par exemple.
+Cette bibliothÃ¨que fournit un ensemble d'outils basÃ©s sur le projet Apache [OpenNLP](https://opennlp.apache.org/) pour identifier des entitÃ©s telles que des noms de personnes dans un texte donnÃ©.Certaines de ces fonctionnalitÃ©s peuvent Ãªtre utilisÃ©es pour rendre anonymes les donnÃ©es dans un texte en supprimant les noms et les courriels par exemple.
+
+## Build
+
+Cette bibliothÃ¨que fournit une interface de ligne de commande pour anonymiser un texte.
+
+
+Pour construire le jar exÃ©cutable, lancer la commande suivante
+
+```
+
+                        mvn assembly
+                    
+```
+
 
 ## Usage
 
-Cette bibliothèque fournit une interface de ligne de commande pour anonymiser un texte.
+Le programme en ligne de commandes se lance de la maniÃ¨re suivante.
+
+
+```
+
+                        java -jar java -jar nlpanonymizer.jar <file_name>
+                    
+```
+
 
 
 [Maven documentation and reports](https://dev.lutece.paris.fr/plugins/library-nlptools/)
