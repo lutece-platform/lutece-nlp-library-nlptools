@@ -35,6 +35,7 @@ package fr.paris.lutece.nlptools;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import opennlp.tools.namefind.NameFinderME;
@@ -46,44 +47,63 @@ import opennlp.tools.util.Span;
 /**
  * PersonNameFinder
  */
-public class PersonNameFinder implements Finder
+public class PersonNameFinder extends AbstractFinder
 {
 
-    private static final String TOKEN_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/en-token.bin";
-    private static final String NAME_FINDER_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/en-ner-person.bin";
+    private static final String TOKEN_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-token.bin";
+    private static final String NAME_FINDER_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-ner-person.bin";
 
     private static String _strTokenModel = TOKEN_DEFAULT_MODEL;
     private static TokenizerME _tokenizer;
 
-    private static String _strNameFinderModel = NAME_FINDER_DEFAULT_MODEL;
-    private static NameFinderME _nameFinder;
+    private String _strNameFinderModel = NAME_FINDER_DEFAULT_MODEL;
+    private NameFinderME _nameFinder;
 
-    private static boolean _bInit;
-    
-    private String _strReplacement;
+    private boolean _bInit;
 
-    public PersonNameFinder()
+    /**
+     * Constructor
+     */
+    public PersonNameFinder( )
     {
-        _strReplacement = " ";
+        super( );
     }
-    
+
+    /**
+     * Constructor
+     *
+     * @param strReplacement
+     *            The replacement
+     */
     public PersonNameFinder( String strReplacement )
     {
-        _strReplacement = strReplacement;
+        super( strReplacement );
+    }
+
+    /**
+     * Constructor
+     *
+     * @param strReplacement
+     *            The replacement
+     */
+    public PersonNameFinder( String strReplacement, String strLanguage )
+    {
+        super( strReplacement, strLanguage );
     }
 
     /**
      * @return the Model
      */
-    public static String getNameModel()
+    public String getNameModel( )
     {
         return _strNameFinderModel;
     }
 
     /**
-     * @param strModel the Model to set
+     * @param strModel
+     *            the Model to set
      */
-    public static void setNameModel( String strModel )
+    public void setNameModel( String strModel )
     {
         _strNameFinderModel = strModel;
     }
@@ -91,13 +111,14 @@ public class PersonNameFinder implements Finder
     /**
      * @return the Model
      */
-    public static String getTokenModel()
+    public static String getTokenModel( )
     {
         return _strTokenModel;
     }
 
     /**
-     * @param strModel the Model to set
+     * @param strModel
+     *            the Model to set
      */
     public static void setTokenModel( String strModel )
     {
@@ -108,32 +129,38 @@ public class PersonNameFinder implements Finder
      * {@inheritDoc }
      */
     @Override
-    public List<String> findOccurrences ( String strInputText ) throws FinderException
+    public List<String> findOccurrences( String strInputText ) throws FinderException
     {
-        if( !_bInit )
+        if ( !_bInit )
         {
-            init();
+            init( );
         }
-        
-        List<String> listNames = new ArrayList<>();
-        String[] sentence = _tokenizer.tokenize( strInputText );
-        Span nameSpans[] = _nameFinder.find( sentence );
-        for( Span span : nameSpans )
+        else
         {
-            StringBuilder sbName = new StringBuilder();
-            for( int i = span.getStart(); i < span.getEnd(); i++ )
+            _nameFinder.clearAdaptiveData( );
+        }
+
+        List<String> listNames = new ArrayList<>( );
+        String [ ] sentence = _tokenizer.tokenize( strInputText );
+        Span nameSpans [ ] = _nameFinder.find( sentence );
+        for ( Span span : nameSpans )
+        {
+            StringBuilder sbName = new StringBuilder( );
+            for ( int i = span.getStart( ); i < span.getEnd( ); i++ )
             {
-                if( i > span.getStart() )
+                if ( i > span.getStart( ) )
                 {
                     sbName.append( " " );
                 }
-                sbName.append( sentence[i] );
+                sbName.append( sentence [i] );
             }
-            listNames.add( sbName.toString() );
+            String strEntity = sbName.toString( );
+            listNames.add( strEntity );
+            addEntity( strEntity );
         }
-        
+
         return listNames;
-        
+
     }
 
     /**
@@ -142,37 +169,71 @@ public class PersonNameFinder implements Finder
     @Override
     public String replaceOccurrences( String strInputText ) throws FinderException
     {
-        return replaceOccurrences( strInputText, _strReplacement );
+        return replaceOccurrences( strInputText, getReplacement( ) );
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public String replaceOccurrences( String strInputText, String strReplacement ) throws FinderException
     {
-        String strOutputText = strInputText;
-        List<String> listNames = findOccurrences( strInputText );
-        if( ! listNames.isEmpty() )
+        if ( !_bInit )
         {
-            for( String strName : listNames )
+            init( );
+        }
+        else
+        {
+            _nameFinder.clearAdaptiveData( );
+        }
+
+        String [ ] sentence = _tokenizer.tokenize( strInputText );
+        String [ ] output = new String [ sentence.length];
+        Span nameSpans [ ] = _nameFinder.find( sentence );
+        int i = 0;
+        int j = 0;
+        while ( true )
+        {
+            for ( Span span : nameSpans )
             {
-                strOutputText = strOutputText.replaceAll( strName, strReplacement );
+                if ( i == span.getStart( ) )
+                {
+                    i = span.getEnd( );
+                    output [j++] = strReplacement;
+                }
+            }
+            if ( i < sentence.length )
+            {
+                output [j++] = sentence [i++];
+            }
+            else
+            {
+                break;
             }
         }
-        return strOutputText;
+
+        StringBuilder sbOutput = new StringBuilder( );
+        for ( String strWord : output )
+        {
+            if ( strWord != null )
+            {
+                sbOutput.append( strWord ).append( " " );
+            }
+        }
+        return sbOutput.toString( );
     }
-    
-    
+
     /**
      * Initialize the finder by loading models
-     * @throws FinderException 
+     *
+     * @throws FinderException
      */
-    private void init() throws FinderException
+    private void init( ) throws FinderException
     {
-        try(
-                InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream(_strTokenModel );
-                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream( _strNameFinderModel ) )
+        String strTokenModel = MessageFormat.format( _strTokenModel, getLanguage( ) );
+        String strNameFinderModel = MessageFormat.format( _strNameFinderModel, getLanguage( ) );
+        try( InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream( strTokenModel ) ;
+                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream( strNameFinderModel ) )
         {
             TokenizerModel tm = new TokenizerModel( isTokenModel );
             _tokenizer = new TokenizerME( tm );
@@ -182,7 +243,7 @@ public class PersonNameFinder implements Finder
         }
         catch( IOException ex )
         {
-            throw new FinderException( "Error loading model : " + ex.getMessage() , ex );
+            throw new FinderException( "Error loading model : " + ex.getMessage( ), ex );
         }
 
     }

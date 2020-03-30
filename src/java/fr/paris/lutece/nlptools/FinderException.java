@@ -32,20 +32,19 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.nlptools;
 
 /**
  * FinderException
  */
-public class FinderException extends Exception 
+public class FinderException extends Exception
 {
     /**
      * Constructor
      */
-    FinderException( String strMessage , Throwable exception )
+    FinderException( String strMessage, Throwable exception )
     {
-        super( strMessage , exception );
+        super( strMessage, exception );
     }
-    
+
 }

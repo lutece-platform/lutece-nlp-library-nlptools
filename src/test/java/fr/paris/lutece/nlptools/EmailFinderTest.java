@@ -48,25 +48,28 @@ public class EmailFinderTest
 
     /**
      * Test of findOccurrences method, of class EmailFinder.
+     * 
      * @throws java.lang.Exception
      */
     @Test
-    public void testFindOccurrences() throws Exception
+    public void testFindOccurrences( ) throws Exception
     {
         System.out.println( "findOccurrences" );
         String strInputText = INPUT_TEXT;
-        EmailFinder instance = new EmailFinder();
+        EmailFinder instance = new EmailFinder( );
         int expResult = 2;
         List<String> result = instance.findOccurrences( strInputText );
-        assertEquals( expResult , result.size() );
+        assertEquals( expResult, result.size( ) );
+        assertEquals( instance.getFoundEntities( ).size( ), result.size( ) );
     }
 
     /**
      * Test of replaceOccurrences method, of class EmailFinder.
+     * 
      * @throws java.lang.Exception
      */
     @Test
-    public void testReplaceOccurrences_String() throws Exception
+    public void testReplaceOccurrences_String( ) throws Exception
     {
         System.out.println( "replaceOccurrences" );
         String strInputText = INPUT_TEXT;
@@ -79,19 +82,20 @@ public class EmailFinderTest
 
     /**
      * Test of replaceOccurrences method, of class EmailFinder.
+     * 
      * @throws java.lang.Exception
      */
     @Test
-    public void testReplaceOccurrences_String_String() throws Exception
+    public void testReplaceOccurrences_String_String( ) throws Exception
     {
         System.out.println( "replaceOccurrences" );
         String strInputText = INPUT_TEXT;
         String strReplacement = "#email#";
-        EmailFinder instance = new EmailFinder();
+        EmailFinder instance = new EmailFinder( );
         String expResult = OUTPUT_TEXT;
         String result = instance.replaceOccurrences( strInputText, strReplacement );
         System.out.println( result );
         assertEquals( expResult, result );
     }
-    
+
 }

@@ -11,9 +11,31 @@ Powered by![](https://dev.lutece.paris.fr/plugins/library-nlptools/images/opennl
 
 This library provides a set of tools based on the [OpenNLP Apache project](https://opennlp.apache.org/) to identify entities such as person names into a given text.Some of those features can be used to anonymized data in a text by removing names and emails for example.
 
-## Usage
+## Build
 
 This library provides a Command Line Interface to anonymize text.
+
+
+To build the executable jar, run the following command
+
+```
+
+                        mvn assembly
+                    
+```
+
+
+## Usage
+
+The Command Line Interface tools can be run as follow.
+
+
+```
+
+                        java -jar java -jar nlpanonymizer.jar <file_name>
+                    
+```
+
 
 
 [Maven documentation and reports](https://dev.lutece.paris.fr/plugins/library-nlptools/)
