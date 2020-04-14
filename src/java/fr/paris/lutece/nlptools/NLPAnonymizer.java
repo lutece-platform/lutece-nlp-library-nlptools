@@ -112,7 +112,7 @@ public class NLPAnonymizer
     private static String getOutputFile( String strFilePath, String strPrefix )
     {
         File file = new File( strFilePath );
-        String strPath = file.getPath( ).substring( 0, strFilePath.lastIndexOf( file.getName( ) ) );
+        String strPath = file.getAbsolutePath( ).substring( 0, strFilePath.lastIndexOf( file.getName( ) ) );
         return strPath + strPrefix + file.getName( );
 
     }
