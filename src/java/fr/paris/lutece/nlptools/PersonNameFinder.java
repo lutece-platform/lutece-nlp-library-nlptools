@@ -188,8 +188,10 @@ public class PersonNameFinder extends AbstractFinder
         }
 
         String [ ] sentence = _tokenizer.tokenize( strInputText );
+        System.out.println( "PersonNameFinder - Token count : " + sentence.length );
         String [ ] output = new String [ sentence.length];
         Span nameSpans [ ] = _nameFinder.find( sentence );
+        System.out.println( "PersonNameFinder - Name Span found : " + nameSpans.length );
         int i = 0;
         int j = 0;
         while ( true )
@@ -205,6 +207,10 @@ public class PersonNameFinder extends AbstractFinder
             if ( i < sentence.length )
             {
                 output [j++] = sentence [i++];
+                if( i % 100 == 0 )
+                {
+                    System.out.println( "PersonNameFinder - Processed token : " + i );
+                }
             }
             else
             {
