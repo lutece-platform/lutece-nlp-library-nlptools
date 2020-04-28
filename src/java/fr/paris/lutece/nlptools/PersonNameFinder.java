@@ -52,6 +52,12 @@ public class PersonNameFinder extends AbstractFinder
 
     private static final String TOKEN_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-token.bin";
     private static final String NAME_FINDER_DEFAULT_MODEL = "/fr/paris/lutece/nlptools/models/{0}-ner-person.bin";
+    private static final int MODULO = 1000;
+
+    private static String[] _ignoredNames =
+    {
+        "Les", "Merci", "R", "Il", "Elle", "Dans", "Pour", "De", "Bien", "Monsieur", "Votre"
+    };
 
     private static String _strTokenModel = TOKEN_DEFAULT_MODEL;
     private static TokenizerME _tokenizer;
@@ -64,46 +70,43 @@ public class PersonNameFinder extends AbstractFinder
     /**
      * Constructor
      */
-    public PersonNameFinder( )
+    public PersonNameFinder()
     {
-        super( );
+        super();
     }
 
     /**
      * Constructor
      *
-     * @param strReplacement
-     *            The replacement
+     * @param strReplacement The replacement
      */
-    public PersonNameFinder( String strReplacement )
+    public PersonNameFinder(String strReplacement)
     {
-        super( strReplacement );
+        super(strReplacement);
     }
 
     /**
      * Constructor
      *
-     * @param strReplacement
-     *            The replacement
+     * @param strReplacement The replacement
      */
-    public PersonNameFinder( String strReplacement, String strLanguage )
+    public PersonNameFinder(String strReplacement, String strLanguage)
     {
-        super( strReplacement, strLanguage );
+        super(strReplacement, strLanguage);
     }
 
     /**
      * @return the Model
      */
-    public String getNameModel( )
+    public String getNameModel()
     {
         return _strNameFinderModel;
     }
 
     /**
-     * @param strModel
-     *            the Model to set
+     * @param strModel the Model to set
      */
-    public void setNameModel( String strModel )
+    public void setNameModel(String strModel)
     {
         _strNameFinderModel = strModel;
     }
@@ -111,16 +114,15 @@ public class PersonNameFinder extends AbstractFinder
     /**
      * @return the Model
      */
-    public static String getTokenModel( )
+    public static String getTokenModel()
     {
         return _strTokenModel;
     }
 
     /**
-     * @param strModel
-     *            the Model to set
+     * @param strModel the Model to set
      */
-    public static void setTokenModel( String strModel )
+    public static void setTokenModel(String strModel)
     {
         _strTokenModel = strModel;
     }
@@ -129,36 +131,51 @@ public class PersonNameFinder extends AbstractFinder
      * {@inheritDoc }
      */
     @Override
-    public List<String> findOccurrences( String strInputText ) throws FinderException
+    public List<String> findOccurrences(String strInput) throws FinderException
     {
-        if ( !_bInit )
+        if (!_bInit)
         {
-            init( );
+            init();
         }
         else
         {
-            _nameFinder.clearAdaptiveData( );
+            _nameFinder.clearAdaptiveData();
         }
 
-        List<String> listNames = new ArrayList<>( );
-        String [ ] sentence = _tokenizer.tokenize( strInputText );
-        Span nameSpans [ ] = _nameFinder.find( sentence );
-        for ( Span span : nameSpans )
+        String strCleanedInput = clean(strInput);
+
+        List<String> listNames = new ArrayList<>();
+        String[] sentences = strCleanedInput.split("\"");
+        System.out.println("NameFinder - number of text bloc to process: " + sentences.length);
+        int nCount = 0;
+        for (String strSentece : sentences)
         {
-            StringBuilder sbName = new StringBuilder( );
-            for ( int i = span.getStart( ); i < span.getEnd( ); i++ )
+            String[] tokens = _tokenizer.tokenize(strSentece);
+            Span nameSpans[] = _nameFinder.find(tokens);
+            for (Span span : nameSpans)
             {
-                if ( i > span.getStart( ) )
+                StringBuilder sbName = new StringBuilder();
+                for (int i = span.getStart(); i < span.getEnd(); i++)
                 {
-                    sbName.append( " " );
+                    if (i > span.getStart())
+                    {
+                        sbName.append(" ");
+                    }
+                    sbName.append(tokens[i]);
                 }
-                sbName.append( sentence [i] );
+                String strEntity = sbName.toString();
+                if (isValidPersonName(strEntity))
+                {
+                    listNames.add(strEntity);
+                    addEntity(strEntity);
+                }
             }
-            String strEntity = sbName.toString( );
-            listNames.add( strEntity );
-            addEntity( strEntity );
+            nCount++;
+            if (nCount % MODULO == 0)
+            {
+                System.out.println("NameFinder - number of text bloc processed: " + nCount);
+            }
         }
-
         return listNames;
 
     }
@@ -167,66 +184,107 @@ public class PersonNameFinder extends AbstractFinder
      * {@inheritDoc }
      */
     @Override
-    public String replaceOccurrences( String strInputText ) throws FinderException
+    public String replaceOccurrences(String strInputText) throws FinderException
     {
-        return replaceOccurrences( strInputText, getReplacement( ) );
+        return replaceOccurrences(strInputText, getReplacement());
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public String replaceOccurrences( String strInputText, String strReplacement ) throws FinderException
+    public String replaceOccurrences(String strInput, String strReplacement) throws FinderException
     {
-        if ( !_bInit )
+        if (!_bInit)
         {
-            init( );
+            init();
         }
         else
         {
-            _nameFinder.clearAdaptiveData( );
+            _nameFinder.clearAdaptiveData();
         }
 
-        String [ ] sentence = _tokenizer.tokenize( strInputText );
-        System.out.println( "PersonNameFinder - Token count : " + sentence.length );
-        String [ ] output = new String [ sentence.length];
-        Span nameSpans [ ] = _nameFinder.find( sentence );
-        System.out.println( "PersonNameFinder - Name Span found : " + nameSpans.length );
-        int i = 0;
-        int j = 0;
-        while ( true )
+        String strCleanedInput = clean(strInput);
+        String[] sentences = strCleanedInput.split("\"");
+        System.out.println("NameFinder - number of text bloc to process: " + sentences.length);
+        StringBuilder sbOutput = new StringBuilder();
+        int nCount = 0;
+        for (String strSentece : sentences)
         {
-            for ( Span span : nameSpans )
+            sbOutput.append('"');
+            String[] tokens = _tokenizer.tokenize(strSentece);
+            String[] output = new String[tokens.length];
+            Span nameSpans[] = _nameFinder.find(tokens);
+            int i = 0;
+            int j = 0;
+            while (true)
             {
-                if ( i == span.getStart( ) )
-                {
-                    i = span.getEnd( );
-                    output [j++] = strReplacement;
-                }
-            }
-            if ( i < sentence.length )
-            {
-                output [j++] = sentence [i++];
-                if( i % 100 == 0 )
-                {
-                    System.out.println( "PersonNameFinder - Processed token : " + i );
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
 
-        StringBuilder sbOutput = new StringBuilder( );
-        for ( String strWord : output )
-        {
-            if ( strWord != null )
+                for (Span span : nameSpans)
+                {
+                    if (i == span.getStart())
+                    {
+                        i = span.getEnd();
+
+                        StringBuilder sbName = new StringBuilder();
+                        for (int k = span.getStart(); k < span.getEnd(); k++)
+                        {
+                            if (k > span.getStart())
+                            {
+                                sbName.append(" ");
+                            }
+                            sbName.append(tokens[k]);
+                        }
+                        String strEntity = sbName.toString();
+                        if (isValidPersonName(strEntity))
+                        {
+                            output[j++] = strReplacement;
+                        }
+                        else
+                        {
+                            output[j++] = strEntity;
+                        }
+                    }
+                }
+
+                if (i < tokens.length && j < output.length)
+                {
+                    output[j++] = tokens[i++];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            for (String strWord : output)
             {
-                sbOutput.append( strWord ).append( " " );
+                if (strWord != null)
+                {
+                    sbOutput.append(strWord).append(" ");
+                }
+            }
+            nCount++;
+            if (nCount % MODULO == 0)
+            {
+                System.out.println("NameFinder - number of text bloc processed: " + nCount);
             }
         }
-        return sbOutput.toString( );
+        sbOutput.append('"');
+
+        System.out.println("NameFinder - number of text bloc processed: " + nCount);
+        
+        String strOutput = sbOutput.toString();
+
+        strOutput = strOutput.replaceAll( "# # # # # # # # " , "\n" );
+        strOutput = strOutput.replaceAll( "# # # # # # # #" , "" );
+        strOutput = strOutput.replaceAll( "# # # # # # ##" , "" );
+        strOutput = strOutput.replaceAll( "## # # # # ##" , "" );
+        strOutput = strOutput.replaceAll( "## # # # # # #" , "" );
+        strOutput = strOutput.replaceAll( "#\n# # # # # ##" , "" );
+//        strOutput = strOutput.replaceAll( " # # # # ##" , "" );
+        
+        return strOutput;
     }
 
     /**
@@ -234,23 +292,44 @@ public class PersonNameFinder extends AbstractFinder
      *
      * @throws FinderException
      */
-    private void init( ) throws FinderException
+    private void init() throws FinderException
     {
-        String strTokenModel = MessageFormat.format( _strTokenModel, getLanguage( ) );
-        String strNameFinderModel = MessageFormat.format( _strNameFinderModel, getLanguage( ) );
-        try( InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream( strTokenModel ) ;
-                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream( strNameFinderModel ) )
+        String strTokenModel = MessageFormat.format(_strTokenModel, getLanguage());
+        String strNameFinderModel = MessageFormat.format(_strNameFinderModel, getLanguage());
+        try (InputStream isTokenModel = PersonNameFinder.class.getResourceAsStream(strTokenModel);
+                InputStream isNameFinderModel = PersonNameFinder.class.getResourceAsStream(strNameFinderModel))
         {
-            TokenizerModel tm = new TokenizerModel( isTokenModel );
-            _tokenizer = new TokenizerME( tm );
-            TokenNameFinderModel model = new TokenNameFinderModel( isNameFinderModel );
-            _nameFinder = new NameFinderME( model );
+            TokenizerModel tm = new TokenizerModel(isTokenModel);
+            _tokenizer = new TokenizerME(tm);
+            TokenNameFinderModel model = new TokenNameFinderModel(isNameFinderModel);
+            _nameFinder = new NameFinderME(model);
             _bInit = true;
         }
-        catch( IOException ex )
+        catch (IOException ex)
         {
-            throw new FinderException( "Error loading model : " + ex.getMessage( ), ex );
+            throw new FinderException("Error loading model : " + ex.getMessage(), ex);
         }
+
+    }
+
+    private String clean(String strInput)
+    {
+        String strClean = strInput.replaceAll("_x000D_", "");
+        strClean = strClean.replaceAll( "\n", "########" );
+        
+        return strClean;
+    }
+
+    private boolean isValidPersonName(String strInput)
+    {
+        for (String strIgnore : _ignoredNames)
+        {
+            if (strInput.equals(strIgnore))
+            {
+                return false;
+            }
+        }
+        return true;
 
     }
 }

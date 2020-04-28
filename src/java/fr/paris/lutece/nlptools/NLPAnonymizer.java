@@ -73,6 +73,7 @@ public class NLPAnonymizer
         {
             try
             {
+                System.out.println( "Start running " + finder.getClass( ).getName( ) + " ...");
                 finder.findOccurrences( strInput );
                 List<String> listEntities = finder.getFoundEntities( );
                 log( sbLogs, "- " + listEntities.size( ) + " entities found by " + finder.getClass( ).getName( ) );
