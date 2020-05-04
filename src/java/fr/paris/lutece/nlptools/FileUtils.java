@@ -48,6 +48,7 @@ import java.io.Writer;
  */
 public class FileUtils
 {
+    private static final int BUFFER_SIZE = 1024; 
     /**
      * read the file content
      * 
@@ -66,9 +67,9 @@ public class FileUtils
                 BufferedReader in = new BufferedReader( isr ) ; )
         {
             Writer writer = new StringWriter( );
-            char [ ] buffer = new char [ 1024];
-            int n;
-            while ( ( n = in.read( buffer ) ) != -1 )
+            char [ ] buffer = new char [ BUFFER_SIZE ];
+            int n = 0;
+            while ( ( n = in.read( buffer, 0 , BUFFER_SIZE ) ) != -1 )
             {
                 writer.write( buffer, 0, n );
             }
