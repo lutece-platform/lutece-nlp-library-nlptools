@@ -62,13 +62,12 @@ public class NLPAnonymizer
         listFinders.add( phoneFinder );
 
         PersonNameFinder nameFinder = new PersonNameFinder( "#PersonName#", "en" );
-        listFinders.add( nameFinder );
+//        listFinders.add( nameFinder );
 
         String strInputFile = args [0];
         String strInput = FileUtils.readFileContent( strInputFile );
 
         StringBuilder sbLogs = new StringBuilder( );
-
         for ( Finder finder : listFinders )
         {
             try

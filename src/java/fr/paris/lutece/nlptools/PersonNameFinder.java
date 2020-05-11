@@ -56,7 +56,7 @@ public class PersonNameFinder extends AbstractFinder
 
     private static String[] _ignoredNames =
     {
-        "Les", "Merci", "R", "Il", "Elle", "Dans", "Pour", "De", "Bien", "Monsieur", "Votre"
+        "Les", "Merci", "R", "Il", "Elle", "Dans", "Pour", "De", "Bien", "Monsieur", "Votre", "Cordialement", "Et", "Ils", "Nous", "Vous", "Sur", "Mes", "Je", "Ainsi", "Ville", "J'ai" , "En", "Alors"
     };
 
     private static String _strTokenModel = TOKEN_DEFAULT_MODEL;
@@ -146,8 +146,10 @@ public class PersonNameFinder extends AbstractFinder
 
         List<String> listNames = new ArrayList<>();
         String[] sentences = strCleanedInput.split("\"");
-        System.out.println("NameFinder - number of text bloc to process: " + sentences.length);
+        int nTotal = sentences.length;
+        System.out.println("NameFinder - number of text bloc to process: " + nTotal );
         int nCount = 0;
+        int nPercent = 0;
         for (String strSentece : sentences)
         {
             String[] tokens = _tokenizer.tokenize(strSentece);
@@ -171,9 +173,11 @@ public class PersonNameFinder extends AbstractFinder
                 }
             }
             nCount++;
-            if (nCount % MODULO == 0)
+            int nNewPercent = 100 * nCount / nTotal;
+            if ( nNewPercent != nPercent )
             {
-                System.out.println("NameFinder - number of text bloc processed: " + nCount);
+                nPercent = nNewPercent;
+                System.out.println("NameFinder - number of text bloc processed: " + nCount + " - (" + nPercent + "%)" );
             }
         }
         return listNames;
@@ -206,9 +210,11 @@ public class PersonNameFinder extends AbstractFinder
 
         String strCleanedInput = clean(strInput);
         String[] sentences = strCleanedInput.split("\"");
-        System.out.println("NameFinder - number of text bloc to process: " + sentences.length);
+        int nTotal = sentences.length;
+        System.out.println("NameFinder - number of text bloc to process: " + nTotal );
         StringBuilder sbOutput = new StringBuilder();
         int nCount = 0;
+        int nPercent = 0;
         for (String strSentece : sentences)
         {
             sbOutput.append('"');
@@ -265,9 +271,11 @@ public class PersonNameFinder extends AbstractFinder
                 }
             }
             nCount++;
-            if (nCount % MODULO == 0)
+            int nNewPercent = 100 * nCount / nTotal;
+            if ( nNewPercent != nPercent )
             {
-                System.out.println("NameFinder - number of text bloc processed: " + nCount);
+                nPercent = nNewPercent;
+                System.out.println("NameFinder - number of text bloc processed: " + nCount + " - (" + nPercent + "%)" );
             }
         }
         sbOutput.append('"');

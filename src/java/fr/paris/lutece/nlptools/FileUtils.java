@@ -63,7 +63,7 @@ public class FileUtils
     {
 
         try( InputStream is = new FileInputStream( strInputFile ) ;
-                InputStreamReader isr = new InputStreamReader( is ) ;
+                InputStreamReader isr = new InputStreamReader( is , "ISO-8859-3" ) ;
                 BufferedReader in = new BufferedReader( isr ) ; )
         {
             Writer writer = new StringWriter( );
